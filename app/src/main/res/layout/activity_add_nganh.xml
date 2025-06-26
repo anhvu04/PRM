@@ -47,7 +47,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Lưu"
-            android:layout_marginStart="8dp" />
+            android:backgroundTint="@android:color/holo_green_light"
+        android:layout_marginStart="8dp" />
     </LinearLayout>
 
 </LinearLayout>

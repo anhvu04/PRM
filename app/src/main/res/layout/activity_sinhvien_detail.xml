@@ -142,7 +142,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="8dp">
 
             <Button
                 android:id="@+id/btnEditSinhvien"
@@ -150,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Sửa"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="4dp"
                 style="@style/Widget.Material3.Button.OutlinedButton" />
 
             <Button
@@ -159,9 +159,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Xóa"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:backgroundTint="@android:color/holo_red_light" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSyncContact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔄 Đồng bộ số điện thoại từ danh bạ"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/btnBack"
