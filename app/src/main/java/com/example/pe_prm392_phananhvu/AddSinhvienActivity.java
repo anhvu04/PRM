@@ -4,13 +4,19 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pe_prm392_phananhvu.adapter.NganhSpinnerAdapter;
 import com.example.pe_prm392_phananhvu.api.ApiClient;
+import com.example.pe_prm392_phananhvu.model.Nganh;
 import com.example.pe_prm392_phananhvu.model.Sinhvien;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,10 +24,13 @@ import retrofit2.Response;
 
 public class AddSinhvienActivity extends AppCompatActivity {
 
-    private TextInputEditText etName, etUsername, etPassword, etDate, etAddress, etIdNganh, etPhone;
+    private TextInputEditText etName, etUsername, etPassword, etDate, etAddress, etPhone;
     private RadioGroup rgGender;
     private RadioButton rbMale, rbFemale;
     private Button btnSave, btnCancel;
+    private Spinner spinnerNganh;
+    private NganhSpinnerAdapter nganhAdapter;
+    private List<Nganh> nganhList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +38,9 @@ public class AddSinhvienActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_sinhvien);
 
         initViews();
+        setupSpinner();
         setupClickListeners();
+        loadNganhData();
     }
 
     private void initViews() {
@@ -38,8 +49,8 @@ public class AddSinhvienActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         etDate = findViewById(R.id.etDate);
         etAddress = findViewById(R.id.etAddress);
-        etIdNganh = findViewById(R.id.etIdNganh);
         etPhone = findViewById(R.id.etPhone);
+        spinnerNganh = findViewById(R.id.spinnerNganh);
         
         rgGender = findViewById(R.id.rgGender);
         rbMale = findViewById(R.id.rbMale);
@@ -47,6 +58,37 @@ public class AddSinhvienActivity extends AppCompatActivity {
         
         btnSave = findViewById(R.id.btnSave);
         btnCancel = findViewById(R.id.btnCancel);
+
+        nganhList = new ArrayList<>();
+    }
+
+    private void setupSpinner() {
+        nganhAdapter = new NganhSpinnerAdapter(this, nganhList);
+        spinnerNganh.setAdapter(nganhAdapter);
+    }
+
+    private void loadNganhData() {
+        Call<List<Nganh>> call = ApiClient.getApiService().getAllNganh();
+        call.enqueue(new Callback<List<Nganh>>() {
+            @Override
+            public void onResponse(Call<List<Nganh>> call, Response<List<Nganh>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    nganhList.clear();
+                    nganhList.addAll(response.body());
+                    nganhAdapter.updateData(nganhList);
+                } else {
+                    Toast.makeText(AddSinhvienActivity.this,
+                            "Không thể tải danh sách ngành", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Nganh>> call, Throwable t) {
+                Toast.makeText(AddSinhvienActivity.this,
+                        "Lỗi kết nối khi tải ngành: " + t.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupClickListeners() {
@@ -95,9 +137,8 @@ public class AddSinhvienActivity extends AppCompatActivity {
             return false;
         }
 
-        if (etIdNganh.getText().toString().trim().isEmpty()) {
-            etIdNganh.setError("Vui lòng nhập ID ngành");
-            etIdNganh.requestFocus();
+        if (spinnerNganh.getSelectedItem() == null) {
+            Toast.makeText(this, "Vui lòng chọn ngành học", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -116,8 +157,11 @@ public class AddSinhvienActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
         String date = etDate.getText().toString().trim();
         String address = etAddress.getText().toString().trim();
-        String idNganh = etIdNganh.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
+
+        // Lấy ngành được chọn từ Spinner
+        Nganh selectedNganh = nganhAdapter.getNganhAtPosition(spinnerNganh.getSelectedItemPosition());
+        String idNganh = selectedNganh.getId();
         
         String gender = rbMale.isChecked() ? "Nam" : "Nữ";
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pe_prm392_phananhvu.R;
@@ -16,11 +17,23 @@ public class SinhvienAdapter extends BaseAdapter {
     private Context context;
     private List<Sinhvien> sinhvienList;
     private LayoutInflater inflater;
+    private OnSinhvienActionListener listener;
+
+    public interface OnSinhvienActionListener {
+        void onViewDetails(Sinhvien sinhvien);
+    }
 
     public SinhvienAdapter(Context context, List<Sinhvien> sinhvienList) {
         this.context = context;
         this.sinhvienList = sinhvienList;
         this.inflater = LayoutInflater.from(context);
+    }
+
+    public SinhvienAdapter(Context context, List<Sinhvien> sinhvienList, OnSinhvienActionListener listener) {
+        this.context = context;
+        this.sinhvienList = sinhvienList;
+        this.inflater = LayoutInflater.from(context);
+        this.listener = listener;
     }
 
     @Override
@@ -46,7 +59,7 @@ public class SinhvienAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.item_sinhvien, parent, false);
             holder = new ViewHolder();
             holder.tvSinhvienName = convertView.findViewById(R.id.tvSinhvienName);
-            holder.tvSinhvienInfo = convertView.findViewById(R.id.tvSinhvienInfo);
+            holder.ivViewDetails = convertView.findViewById(R.id.ivViewDetails);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -54,12 +67,13 @@ public class SinhvienAdapter extends BaseAdapter {
 
         Sinhvien sinhvien = sinhvienList.get(position);
         holder.tvSinhvienName.setText(sinhvien.getName());
-        
-        // Hiển thị thông tin tóm tắt
-        String info = "ID: " + sinhvien.getId() + " | " +
-                     "Ngày sinh: " + sinhvien.getDate() + " | " +
-                     "Giới tính: " + sinhvien.getGender();
-        holder.tvSinhvienInfo.setText(info);
+
+        // Xử lý sự kiện click vào icon con mắt
+        holder.ivViewDetails.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onViewDetails(sinhvien);
+            }
+        });
 
         return convertView;
     }
@@ -71,6 +85,6 @@ public class SinhvienAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         TextView tvSinhvienName;
-        TextView tvSinhvienInfo;
+        ImageView ivViewDetails;
     }
 }

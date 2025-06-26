@@ -20,7 +20,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NewStudentsActivity extends AppCompatActivity {
+public class NewStudentsActivity extends AppCompatActivity implements SinhvienAdapter.OnSinhvienActionListener {
 
     private ListView listViewNewStudents;
     private SinhvienAdapter adapter;
@@ -48,16 +48,8 @@ public class NewStudentsActivity extends AppCompatActivity {
     }
 
     private void setupListView() {
-        adapter = new SinhvienAdapter(this, newStudentsList);
+        adapter = new SinhvienAdapter(this, newStudentsList, this);
         listViewNewStudents.setAdapter(adapter);
-
-        // Xử lý sự kiện click vào item
-        listViewNewStudents.setOnItemClickListener((parent, view, position, id) -> {
-            Sinhvien selectedSinhvien = newStudentsList.get(position);
-            Intent intent = new Intent(NewStudentsActivity.this, SinhvienDetailActivity.class);
-            intent.putExtra("sinhvien_id", selectedSinhvien.getId());
-            startActivity(intent);
-        });
     }
 
     private void setupButtonListeners() {
@@ -117,5 +109,13 @@ public class NewStudentsActivity extends AppCompatActivity {
         super.onResume();
         // Tải lại dữ liệu khi quay lại từ trang khác
         loadNewStudentsData();
+    }
+
+    @Override
+    public void onViewDetails(Sinhvien sinhvien) {
+        // Chuyển sang trang chi tiết sinh viên
+        Intent intent = new Intent(NewStudentsActivity.this, SinhvienDetailActivity.class);
+        intent.putExtra("sinhvien_id", sinhvien.getId());
+        startActivity(intent);
     }
 }
